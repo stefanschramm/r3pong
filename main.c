@@ -1,5 +1,5 @@
 /*
- * r3pong
+ * main.c - r3pong - 3-dimensional pong implementation using GLUT
  *
  * Copyright (C) 2009, Stefan Schramm <mail@stefanschramm.net>
  *
@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <GL/glut.h>
 
+#include "r3pong.h"
+
 #define SCREENWIDTH 800
 #define SCREENHEIGHT 600
 
@@ -28,12 +30,6 @@
 #define FIELDHEIGHT 3.0
 #define FIELDDISTANCE 4.0
 #define TIMERTIMEOUT 5
-
-typedef struct _paddle {
-	int player; // -1: left player; 1: right player
-	GLfloat y, z;
-	GLfloat size;
-} paddle;
 
 paddle paddles[2];
 
