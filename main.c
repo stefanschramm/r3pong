@@ -120,7 +120,6 @@ void mouse_callback(int x, int y) {
 
 	paddles[1].z = (x - screen_width/2) * ((FIELDWIDTH - paddles[1].size) / screen_width) + paddles[1].size / 2;
 	paddles[1].y = (-y + screen_height/2) * ((FIELDHEIGHT - paddles[1].size) / screen_height) - paddles[1].size / 2;
-	render_scene();
 }
 
 void reshape_callback(int w, int h) {
@@ -197,7 +196,7 @@ int main(int argc, char **argv) {
 	ball.z = 0;
 	ball.size = 0.1;
 	// TODO: random direction on start
-	ball.vx = 0.01;
+	ball.vx = 0.018;
 	ball.vy = 0.01;
 	ball.vz = -0.01;
 
