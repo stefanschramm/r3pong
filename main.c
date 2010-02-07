@@ -1,7 +1,7 @@
 /*
  * main.c - r3pong - 3-dimensional pong implementation using GLUT
  *
- * Copyright (C) 2009, Stefan Schramm <mail@stefanschramm.net>
+ * Copyright (C) 2010, Stefan Schramm <mail@stefanschramm.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
