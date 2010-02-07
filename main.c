@@ -35,6 +35,8 @@ typedef struct _paddle {
 	GLfloat size;
 } paddle;
 
+paddle paddles[2];
+
 struct {
 	GLfloat x;
 	GLfloat y;
@@ -42,10 +44,10 @@ struct {
 	GLfloat size;
 } ball;
 
-paddle paddles[2];
 int screen_width, screen_height;
 
-void draw_paddle(paddle* p) {
+void render_paddle(paddle* p) {
+
 	glBegin(GL_QUADS);
 	glColor3f(1, 0, 0);
 	glVertex3f(p->player * FIELDDISTANCE/2, p->y, p->z);
@@ -97,15 +99,15 @@ void render_scene(void) {
 	glEnd();
 
 	// draw paddles
-	draw_paddle(&paddles[0]);
-	draw_paddle(&paddles[1]);
+	render_paddle(&paddles[0]);
+	render_paddle(&paddles[1]);
 
 	glPopMatrix();
 	glutSwapBuffers();
 }
 
-void keyboard_callback(unsigned char key, int x, int y)
-{
+void keyboard_callback(unsigned char key, int x, int y) {
+
 	switch(key) {
 		case 'q':
 			exit(0);
@@ -121,6 +123,7 @@ void keyboard_callback(unsigned char key, int x, int y)
 
 
 void mouse_callback(int x, int y) {
+
 	paddles[1].z = (x - screen_width/2) * ((FIELDWIDTH - paddles[1].size) / screen_width) + paddles[1].size / 2;
 	paddles[1].y = (-y + screen_height/2) * ((FIELDHEIGHT - paddles[1].size) / screen_height) - paddles[1].size / 2;
 	render_scene();
