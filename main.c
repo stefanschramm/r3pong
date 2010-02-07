@@ -151,6 +151,10 @@ void timer_callback(int value) {
 	ball.y += ball.vy;
 	ball.z += ball.vz;
 
+	// left player paddle - pseudo-"ai"
+	paddles[0].y = ball.y - paddles[0].size / 2;
+	paddles[0].z = ball.z + paddles[0].size / 2;
+
 	// check collisions
 	if (ball.x >= FIELDDISTANCE / 2) {
 		// right wall
