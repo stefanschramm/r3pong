@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <GL/glut.h> 
 #include <stdio.h>
 #include <stdlib.h>
+#include <GL/glut.h>
 
 #define SCREENWIDTH 800
 #define SCREENHEIGHT 600
@@ -27,20 +27,19 @@
 #define FIELDWIDTH 3.0
 #define FIELDHEIGHT 3.0
 #define FIELDDISTANCE 4.0
+#define TIMERTIMEOUT 5
 
 typedef struct _paddle {
 	int player; // -1: left player; 1: right player
-	GLfloat y;
-	GLfloat z;
+	GLfloat y, z;
 	GLfloat size;
 } paddle;
 
 paddle paddles[2];
 
 struct {
-	GLfloat x;
-	GLfloat y;
-	GLfloat z;
+	GLfloat x, y, z;
+	GLfloat vx, vy, vz;
 	GLfloat size;
 } ball;
 
@@ -66,7 +65,7 @@ void render_scene(void) {
 	// draw walls:
 	// bottom
 	glBegin(GL_QUADS);
-	glColor3f(0.9, 0.9, 0.9);
+	glColor3f(0.5, 0.5, 0.5);
 	glVertex3f(-FIELDDISTANCE/2, -FIELDHEIGHT/2, FIELDWIDTH/2);
 	glVertex3f(-FIELDDISTANCE/2, -FIELDHEIGHT/2, -FIELDWIDTH/2);
 	glVertex3f(FIELDDISTANCE/2, -FIELDHEIGHT/2, -FIELDWIDTH/2);
@@ -74,7 +73,7 @@ void render_scene(void) {
 	glEnd();
 	// back
 	glBegin(GL_QUADS);
-	glColor3f(1, 1, 1);
+	glColor3f(0.7, 0.7, 0.7);
 	glVertex3f(-FIELDDISTANCE/2, -FIELDHEIGHT/2, -FIELDWIDTH/2);
 	glVertex3f(-FIELDDISTANCE/2, FIELDHEIGHT/2, -FIELDWIDTH/2);
 	glVertex3f(FIELDDISTANCE/2, FIELDHEIGHT/2, -FIELDWIDTH/2);
@@ -82,7 +81,7 @@ void render_scene(void) {
 	glEnd();
 	// top
 	glBegin(GL_QUADS);
-	glColor3f(0.9, 0.9, 0.9);
+	glColor3f(0.5, 0.5, 0.5);
 	glVertex3f(-FIELDDISTANCE/2, FIELDHEIGHT/2, FIELDWIDTH/2);
 	glVertex3f(-FIELDDISTANCE/2, FIELDHEIGHT/2, -FIELDWIDTH/2);
 	glVertex3f(FIELDDISTANCE/2, FIELDHEIGHT/2, -FIELDWIDTH/2);
@@ -110,7 +109,7 @@ void keyboard_callback(unsigned char key, int x, int y) {
 
 	switch(key) {
 		case 'q':
-			exit(0);
+			exit(EXIT_SUCCESS);
 		case '+':
 			glTranslatef(0, 0, 1);
 			break;
@@ -120,7 +119,6 @@ void keyboard_callback(unsigned char key, int x, int y) {
 	}
 	render_scene();
 }
-
 
 void mouse_callback(int x, int y) {
 
@@ -146,9 +144,49 @@ void reshape_callback(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(
-		0.0,0.0,5.0,
-		0.0,0.0,-1.0,
-		0.0f,1.0f,0.0f);
+		0.0, 0.0, 5.0,
+		0.0, 0.0, -1.0,
+		0.0f, 1.0f, 0.0f);
+}
+
+void timer_callback(int value) {
+
+	ball.x += ball.vx;
+	ball.y += ball.vy;
+	ball.z += ball.vz;
+
+	// check collisions
+	if (ball.x >= FIELDDISTANCE / 2) {
+		// right wall
+		// TODO: take ball size into account
+		if (ball.y >= paddles[1].y && ball.y <= paddles[1].y + paddles[1].size &&
+			ball.z <= paddles[1].z && ball.z >= paddles[1].z - paddles[1].size
+		) {
+			ball.vx *= -1;
+		}
+		else {
+			// TODO: update players score
+			ball.x = 0;
+			ball.y = 0;
+			ball.z = 0;
+		}
+	}
+	else if (ball.x <= - FIELDDISTANCE / 2) {
+		// left wall
+		// TODO: other player / "ai" here
+		ball.vx *= -1;
+	}
+	if (ball.z <= -FIELDWIDTH / 2 || ball.z >= FIELDWIDTH / 2) {
+		// back or front wall
+		ball.vz *= -1;
+	}
+	if (ball.y <= -FIELDHEIGHT / 2 || ball.y >= FIELDHEIGHT / 2) {
+		// bottom or top wall
+		ball.vy *= -1;
+	}
+	render_scene();
+	// TODO: make timer callback time and ball movement adjust on fps (rendering time)?
+	glutTimerFunc(TIMERTIMEOUT, timer_callback, 0);
 }
 
 int main(int argc, char **argv) {
@@ -158,6 +196,10 @@ int main(int argc, char **argv) {
 	ball.y = 0;
 	ball.z = 0;
 	ball.size = 0.1;
+	// TODO: random direction on start
+	ball.vx = 0.01;
+	ball.vy = 0.01;
+	ball.vz = -0.01;
 
 	// init paddles
 	paddles[0].player = -1;
@@ -169,19 +211,18 @@ int main(int argc, char **argv) {
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(SCREENWIDTH, SCREENHEIGHT);
 	glutCreateWindow("r3pong");
 	glutDisplayFunc(render_scene);
+	glutKeyboardFunc(keyboard_callback);
 	glutPassiveMotionFunc(mouse_callback);
 	glutReshapeFunc(reshape_callback);
-	glutKeyboardFunc(keyboard_callback);
 	glEnable(GL_DEPTH_TEST);
+	timer_callback(0);
 	glutMainLoop();
 
 	// TODO:
-	// - implement ball movement (idleFunc?) and events
+	// - count player score
 	// - pseudo-ai: left paddle z+y coordinates == ball position
 	// - multiplayer mode (server/client)
-
 }
