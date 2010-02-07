@@ -1,0 +1,3 @@
+
+For compiling r3pong you need the freeglut header files on your system (such as freeglut3-dev package for Debian-based systems).
+

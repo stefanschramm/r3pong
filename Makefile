@@ -3,7 +3,6 @@ SRC	= main.c
 CFLAGS	= -std=c99 -Wall -O0
 LDFLAGS	= -lglut
 RM	= rm -f
-
 CC	= gcc
 
 OBJS	= $(SRC:%.c=%.o)
