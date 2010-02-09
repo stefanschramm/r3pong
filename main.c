@@ -129,8 +129,8 @@ void keyboard_callback(unsigned char key, int x, int y) {
 
 void mouse_callback(int x, int y) {
 
-	players[1].z = (x - screen_width/2) * ((FIELDWIDTH - players[1].size) / screen_width) + players[1].size / 2;
-	players[1].y = (-y + screen_height/2) * ((FIELDHEIGHT - players[1].size) / screen_height) - players[1].size / 2;
+	players[1].z = (x - screen_width/2) * ((FIELDWIDTH - players[1].size) / screen_width) + players[1].size/2;
+	players[1].y = (-y + screen_height/2) * ((FIELDHEIGHT - players[1].size) / screen_height) - players[1].size/2;
 }
 
 void reshape_callback(int w, int h) {
@@ -157,10 +157,14 @@ void reshape_callback(int w, int h) {
 
 int player_hits_ball(player *p) {
 	// TODO: take ball size into account
-	return  ball.y >= p->y &&
-		ball.y <= p->y + p->size &&
-		ball.z <= p->z &&
-		ball.z >= p->z - p->size;
+	if (ball.y >= p->y && ball.y <= p->y + p->size && ball.z <= p->z && ball.z >= p->z - p->size) {
+		ball.vx *= -1;
+		// TODO: some distortion for y and z, depending on where the ball hit the paddle
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 void timer_callback(int value) {
@@ -185,37 +189,29 @@ void timer_callback(int value) {
 	}
 
 	// check collisions
-	if (ball.x >= FIELDDISTANCE / 2) {
+	if (ball.x >= FIELDDISTANCE/2) {
 		// right wall
-		if (player_hits_ball(&players[1])) {
-			// TODO: add some variance here
-			ball.vx *= -1;
-		}
-		else {
+		if (!player_hits_ball(&players[1])) {
 			players[0].score++;
 			ball.x = 0;
 			ball.y = 0;
 			ball.z = 0;
 		}
 	}
-	else if (ball.x <= - FIELDDISTANCE / 2) {
+	else if (ball.x <= - FIELDDISTANCE/2) {
 		// left wall
-		if (player_hits_ball(&players[0])) {
-			// TODO: add some variance here
-			ball.vx *= -1;
-		}
-		else {
+		if (!player_hits_ball(&players[0])) {
 			players[1].score++;
 			ball.x = 0;
 			ball.y = 0;
 			ball.z = 0;
 		}
 	}
-	if (ball.z <= -FIELDWIDTH / 2 || ball.z >= FIELDWIDTH / 2) {
+	if (ball.z <= -FIELDWIDTH/2 || ball.z >= FIELDWIDTH/2) {
 		// back or front wall
 		ball.vz *= -1;
 	}
-	if (ball.y <= -FIELDHEIGHT / 2 || ball.y >= FIELDHEIGHT / 2) {
+	if (ball.y <= -FIELDHEIGHT/2 || ball.y >= FIELDHEIGHT/2) {
 		// bottom or top wall
 		ball.vy *= -1;
 	}
@@ -262,3 +258,4 @@ int main(int argc, char **argv) {
 	// - pseudo-ai: left paddle z+y coordinates == ball position
 	// - multiplayer mode (server/client)
 }
+
