@@ -153,6 +153,14 @@ void reshape_callback(int w, int h) {
 		0.0f, 1.0f, 0.0f);
 }
 
+int player_hits_ball(player *p) {
+	// TODO: take ball size into account
+	return  ball.y >= p->y &&
+		ball.y <= p->y + p->size &&
+		ball.z <= p->z &&
+		ball.z >= p->z - p->size;
+}
+
 void timer_callback(int value) {
 
 	ball.x += ball.vx;
@@ -166,10 +174,7 @@ void timer_callback(int value) {
 	// check collisions
 	if (ball.x >= FIELDDISTANCE / 2) {
 		// right wall
-		// TODO: take ball size into account
-		if (ball.y >= players[1].y && ball.y <= players[1].y + players[1].size &&
-			ball.z <= players[1].z && ball.z >= players[1].z - players[1].size
-		) {
+		if (player_hits_ball(&players[1])) {
 			ball.vx *= -1;
 		}
 		else {
@@ -181,8 +186,15 @@ void timer_callback(int value) {
 	}
 	else if (ball.x <= - FIELDDISTANCE / 2) {
 		// left wall
-		// TODO: other player / "ai" here
-		ball.vx *= -1;
+		if (player_hits_ball(&players[0])) {
+			ball.vx *= -1;
+		}
+		else {
+			players[1].score++;
+			ball.x = 0;
+			ball.y = 0;
+			ball.z = 0;
+		}
 	}
 	if (ball.z <= -FIELDWIDTH / 2 || ball.z >= FIELDWIDTH / 2) {
 		// back or front wall
