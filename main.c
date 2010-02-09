@@ -31,7 +31,7 @@
 #define FIELDDISTANCE 4.0
 #define TIMERTIMEOUT 5
 
-paddle paddles[2];
+player players[2];
 
 struct {
 	GLfloat x, y, z;
@@ -41,7 +41,7 @@ struct {
 
 int screen_width, screen_height;
 
-void render_paddle(paddle* p) {
+void render_paddle(player *p) {
 
 	glBegin(GL_QUADS);
 	glColor3f(1, 0, 0);
@@ -94,8 +94,8 @@ void render_scene(void) {
 	glEnd();
 
 	// draw paddles
-	render_paddle(&paddles[0]);
-	render_paddle(&paddles[1]);
+	render_paddle(&players[0]);
+	render_paddle(&players[1]);
 
 	// print score
 	glColor3f(1, 1, 1);
@@ -125,8 +125,8 @@ void keyboard_callback(unsigned char key, int x, int y) {
 
 void mouse_callback(int x, int y) {
 
-	paddles[1].z = (x - screen_width/2) * ((FIELDWIDTH - paddles[1].size) / screen_width) + paddles[1].size / 2;
-	paddles[1].y = (-y + screen_height/2) * ((FIELDHEIGHT - paddles[1].size) / screen_height) - paddles[1].size / 2;
+	players[1].z = (x - screen_width/2) * ((FIELDWIDTH - players[1].size) / screen_width) + players[1].size / 2;
+	players[1].y = (-y + screen_height/2) * ((FIELDHEIGHT - players[1].size) / screen_height) - players[1].size / 2;
 }
 
 void reshape_callback(int w, int h) {
@@ -158,20 +158,20 @@ void timer_callback(int value) {
 	ball.z += ball.vz;
 
 	// left player paddle - pseudo-"ai"
-	paddles[0].y = ball.y - paddles[0].size / 2;
-	paddles[0].z = ball.z + paddles[0].size / 2;
+	players[0].y = ball.y - players[0].size / 2;
+	players[0].z = ball.z + players[0].size / 2;
 
 	// check collisions
 	if (ball.x >= FIELDDISTANCE / 2) {
 		// right wall
 		// TODO: take ball size into account
-		if (ball.y >= paddles[1].y && ball.y <= paddles[1].y + paddles[1].size &&
-			ball.z <= paddles[1].z && ball.z >= paddles[1].z - paddles[1].size
+		if (ball.y >= players[1].y && ball.y <= players[1].y + players[1].size &&
+			ball.z <= players[1].z && ball.z >= players[1].z - players[1].size
 		) {
 			ball.vx *= -1;
 		}
 		else {
-			// TODO: update players score
+			players[0].score++;
 			ball.x = 0;
 			ball.y = 0;
 			ball.z = 0;
@@ -207,13 +207,14 @@ int main(int argc, char **argv) {
 	ball.vy = 0.01;
 	ball.vz = -0.01;
 
-	// init paddles
-	paddles[0].player = -1;
-	paddles[0].y = 0;
-	paddles[0].z = 0;
-	paddles[0].size = 1;
-	paddles[1] = paddles[0];
-	paddles[1].player = 1;
+	// init players
+	players[0].player = -1;
+	players[0].y = 0;
+	players[0].z = 0;
+	players[0].size = 1;
+	players[0].score = 0;
+	players[1] = players[0];
+	players[1].player = 1;
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);

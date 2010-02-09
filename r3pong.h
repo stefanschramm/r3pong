@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-typedef struct _paddle {
+typedef struct _player {
 	int player; // -1: left player; 1: right player
+	unsigned int score;
 	GLfloat y, z;
 	GLfloat size;
-} paddle;
+} player;
 
