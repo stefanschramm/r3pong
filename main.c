@@ -97,6 +97,13 @@ void render_scene(void) {
 	render_paddle(&paddles[0]);
 	render_paddle(&paddles[1]);
 
+	// print score
+	glColor3f(1, 1, 1);
+	// print text just a bit (0.1) in front of the back wall
+	glRasterPos3f(0, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, '0');
+	// TODO: how to use a larger font?; count and display real score
+
 	glPopMatrix();
 	glutSwapBuffers();
 }
