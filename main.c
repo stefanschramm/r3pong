@@ -101,8 +101,10 @@ void render_scene(void) {
 	glColor3f(1, 1, 1);
 	// print text just a bit (0.1) in front of the back wall
 	glRasterPos3f(0, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
-	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, '0');
-	// TODO: how to use a larger font?; count and display real score
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 0x30 | (players[0].score % 10));
+	// TODO:
+	// - how to use a larger font?
+	// - count and display real score (for now just the last digit of player[0]'s score is shown)
 
 	glPopMatrix();
 	glutSwapBuffers();
