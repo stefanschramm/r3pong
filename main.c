@@ -100,11 +100,13 @@ void render_scene(void) {
 	// print score
 	glColor3f(1, 1, 1);
 	// print text just a bit (0.1) in front of the back wall
-	glRasterPos3f(0, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
+	glRasterPos3f(-1, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
 	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 0x30 | (players[0].score % 10));
+	glRasterPos3f(1, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 0x30 | (players[1].score % 10));
 	// TODO:
 	// - how to use a larger font?
-	// - count and display real score (for now just the last digit of player[0]'s score is shown)
+	// - display real score (for now just the last digit is shown)
 
 	glPopMatrix();
 	glutSwapBuffers();
@@ -133,7 +135,7 @@ void mouse_callback(int x, int y) {
 
 void reshape_callback(int w, int h) {
 
-	if(h == 0)
+	if (h == 0)
 		h = 1;
 
 	screen_width = w;
@@ -148,7 +150,7 @@ void reshape_callback(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(
-		0.0, 0.0, 5.0,
+		0.0, 0.0, 5.7,
 		0.0, 0.0, -1.0,
 		0.0f, 1.0f, 0.0f);
 }
@@ -168,13 +170,25 @@ void timer_callback(int value) {
 	ball.z += ball.vz;
 
 	// left player paddle - pseudo-"ai"
-	players[0].y = ball.y - players[0].size / 2;
-	players[0].z = ball.z + players[0].size / 2;
+	// TODO: do this part with some simple vector analysis
+	if (ball.y >= players[0].y + players[0].size/2) {
+		players[0].y += 0.006;
+	}
+	else {
+		players[0].y -= 0.006;
+	}
+	if (ball.z >= players[0].z - players[0].size/2) {
+		players[0].z += 0.006;
+	}
+	else {
+		players[0].z -= 0.006;
+	}
 
 	// check collisions
 	if (ball.x >= FIELDDISTANCE / 2) {
 		// right wall
 		if (player_hits_ball(&players[1])) {
+			// TODO: add some variance here
 			ball.vx *= -1;
 		}
 		else {
@@ -187,6 +201,7 @@ void timer_callback(int value) {
 	else if (ball.x <= - FIELDDISTANCE / 2) {
 		// left wall
 		if (player_hits_ball(&players[0])) {
+			// TODO: add some variance here
 			ball.vx *= -1;
 		}
 		else {
