@@ -44,7 +44,7 @@ int screen_width, screen_height;
 void render_paddle(player *p) {
 
 	glBegin(GL_QUADS);
-	glColor3f(1, 0, 0);
+	glColor3f(0.5, 0.1, 0.1);
 	glVertex3f(p->player * FIELDDISTANCE/2, p->y, p->z);
 	glVertex3f(p->player * FIELDDISTANCE/2, p->y+p->size, p->z);
 	glVertex3f(p->player * FIELDDISTANCE/2, p->y+p->size, p->z-p->size);
@@ -69,7 +69,7 @@ void render_scene(void) {
 	glEnd();
 	// back
 	glBegin(GL_QUADS);
-	glColor3f(0.7, 0.7, 0.7);
+	glColor3f(0.4, 0.4, 0.4);
 	glVertex3f(-FIELDDISTANCE/2, -FIELDHEIGHT/2, -FIELDWIDTH/2);
 	glVertex3f(-FIELDDISTANCE/2, FIELDHEIGHT/2, -FIELDWIDTH/2);
 	glVertex3f(FIELDDISTANCE/2, FIELDHEIGHT/2, -FIELDWIDTH/2);
@@ -77,20 +77,53 @@ void render_scene(void) {
 	glEnd();
 	// top
 	glBegin(GL_QUADS);
-	glColor3f(0.5, 0.5, 0.5);
+	glColor3f(0.3, 0.3, 0.3);
 	glVertex3f(-FIELDDISTANCE/2, FIELDHEIGHT/2, FIELDWIDTH/2);
 	glVertex3f(-FIELDDISTANCE/2, FIELDHEIGHT/2, -FIELDWIDTH/2);
 	glVertex3f(FIELDDISTANCE/2, FIELDHEIGHT/2, -FIELDWIDTH/2);
 	glVertex3f(FIELDDISTANCE/2, FIELDHEIGHT/2, FIELDWIDTH/2);
 	glEnd();
 
-	// draw ball
+	// draw ball:
+	// front
 	glBegin(GL_QUADS);
-	glColor3f(1, 1, 1);
+	glColor3f(0.6, 0.6, 0.6);
 	glVertex3f(ball.x - ball.size, ball.y - ball.size, ball.z);
 	glVertex3f(ball.x - ball.size, ball.y + ball.size, ball.z);
 	glVertex3f(ball.x + ball.size, ball.y + ball.size, ball.z);
 	glVertex3f(ball.x + ball.size, ball.y - ball.size, ball.z);
+	glEnd();
+	// left
+	glBegin(GL_QUADS);
+	glColor3f(0.4, 0.4, 0.4);
+	glVertex3f(ball.x - ball.size, ball.y - ball.size, ball.z);
+	glVertex3f(ball.x - ball.size, ball.y + ball.size, ball.z);
+	glVertex3f(ball.x - ball.size, ball.y + ball.size, ball.z - ball.size);
+	glVertex3f(ball.x - ball.size, ball.y - ball.size, ball.z - ball.size);
+	glEnd();
+	// right
+	glBegin(GL_QUADS);
+	glColor3f(0.8, 0.8, 0.8);
+	glVertex3f(ball.x + ball.size, ball.y - ball.size, ball.z);
+	glVertex3f(ball.x + ball.size, ball.y + ball.size, ball.z);
+	glVertex3f(ball.x + ball.size, ball.y + ball.size, ball.z - ball.size);
+	glVertex3f(ball.x + ball.size, ball.y - ball.size, ball.z - ball.size);
+	glEnd();
+	// top
+	glBegin(GL_QUADS);
+	glColor3f(0.8, 0.8, 0.8);
+	glVertex3f(ball.x - ball.size, ball.y + ball.size, ball.z - ball.size);
+	glVertex3f(ball.x - ball.size, ball.y + ball.size, ball.z);
+	glVertex3f(ball.x + ball.size, ball.y + ball.size, ball.z);
+	glVertex3f(ball.x + ball.size, ball.y + ball.size, ball.z - ball.size);
+	glEnd();
+	// bottom
+	glBegin(GL_QUADS);
+	glColor3f(0.4, 0.4, 0.4);
+	glVertex3f(ball.x - ball.size, ball.y - ball.size, ball.z - ball.size);
+	glVertex3f(ball.x - ball.size, ball.y - ball.size, ball.z);
+	glVertex3f(ball.x + ball.size, ball.y - ball.size, ball.z);
+	glVertex3f(ball.x + ball.size, ball.y - ball.size, ball.z - ball.size);
 	glEnd();
 
 	// draw paddles
@@ -175,18 +208,8 @@ void timer_callback(int value) {
 
 	// left player paddle - pseudo-"ai"
 	// TODO: do this part with some simple vector analysis
-	if (ball.y >= players[0].y + players[0].size/2) {
-		players[0].y += 0.006;
-	}
-	else {
-		players[0].y -= 0.006;
-	}
-	if (ball.z >= players[0].z - players[0].size/2) {
-		players[0].z += 0.006;
-	}
-	else {
-		players[0].z -= 0.006;
-	}
+	players[0].y += (ball.y >= players[0].y + players[0].size/2) ? 0.006 : -0.006;
+	players[0].z += (ball.z >= players[0].z - players[0].size/2) ? 0.006 : -0.006;
 
 	// check collisions
 	if (ball.x >= FIELDDISTANCE/2) {
@@ -253,9 +276,6 @@ int main(int argc, char **argv) {
 	timer_callback(0);
 	glutMainLoop();
 
-	// TODO:
-	// - count player score
-	// - pseudo-ai: left paddle z+y coordinates == ball position
-	// - multiplayer mode (server/client)
+	// TODO: multiplayer mode (server/client)
 }
 
