@@ -132,14 +132,19 @@ void render_scene(void) {
 
 	// print score
 	glColor3f(1, 1, 1);
-	// print text just a bit (0.1) in front of the back wall
-	glRasterPos3f(-1, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
-	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 0x30 | (players[0].score % 10));
-	glRasterPos3f(1, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
-	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 0x30 | (players[1].score % 10));
+	char buf[8];
+	for (int n = 0; n < 2; n++) {
+		// print text just a bit (0.1) in front of the back wall
+		glRasterPos3f(players[n].player * 0.2, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
+		snprintf(buf, 8, "%i", players[n].score);
+		for(int i = 0; buf[i] != 0 && i < 8; i++) {
+			printf(" %i\n", i);
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, buf[i]);
+		}
+	}
 	// TODO:
 	// - how to use a larger font?
-	// - display real score (for now just the last digit is shown)
+	// - determine character width (glutBitmapWidth?) to align it properly
 
 	glPopMatrix();
 	glutSwapBuffers();
@@ -276,6 +281,13 @@ int main(int argc, char **argv) {
 	timer_callback(0);
 	glutMainLoop();
 
-	// TODO: multiplayer mode (server/client)
+	// TODO:
+	// multiplayer mode (server/client)
+	// - seperate binary r3pongd/r3pongsrv?
+	// - player chooses a name when connecting
+	// - player can initiate a game or join one that another player initiated
+	// - client sends: paddle position
+	// - server sends: (ball position+)direction/speed, opponent's paddle position, event messages (collisions)
+	// - actually the ball position doesn't need to be transmitted all the time
+	// - time/speed synchronization (calculate ball movement independently from rendering time!)
 }
-
