@@ -138,7 +138,6 @@ void render_scene(void) {
 		glRasterPos3f(players[n].player * 0.2, FIELDHEIGHT/2 - 0.3, -FIELDWIDTH/2 + 0.1);
 		snprintf(buf, 8, "%i", players[n].score);
 		for(int i = 0; buf[i] != 0 && i < 8; i++) {
-			printf(" %i\n", i);
 			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, buf[i]);
 		}
 	}
