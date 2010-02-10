@@ -179,13 +179,13 @@ void reshape_callback(int w, int h) {
 	glLoadIdentity();
 	glViewport(0, 0, w, h);
 	
-	gluPerspective(40,ratio,1,1000);
+	gluPerspective(40, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(
-		0.0, 0.0, 5.7,
-		0.0, 0.0, -1.0,
-		0.0f, 1.0f, 0.0f);
+		0, 0, 5.7, // look from
+		0, 0, 0,   // at
+		0, 1, 0);  // above me
 }
 
 int player_hits_ball(player *p) {
@@ -212,7 +212,7 @@ void timer_callback(int value) {
 	players[0].z += (ball.z >= players[0].z - players[0].size/2) ? 0.006 : -0.006;
 
 	// check collisions
-	if (ball.x >= FIELDDISTANCE/2) {
+	if (ball.x + ball.size >= FIELDDISTANCE/2) {
 		// right wall
 		if (!player_hits_ball(&players[1])) {
 			players[0].score++;
@@ -221,7 +221,7 @@ void timer_callback(int value) {
 			ball.z = 0;
 		}
 	}
-	else if (ball.x <= - FIELDDISTANCE/2) {
+	else if (ball.x - ball.size <= - FIELDDISTANCE/2) {
 		// left wall
 		if (!player_hits_ball(&players[0])) {
 			players[1].score++;
@@ -230,11 +230,11 @@ void timer_callback(int value) {
 			ball.z = 0;
 		}
 	}
-	if (ball.z <= -FIELDWIDTH/2 || ball.z >= FIELDWIDTH/2) {
+	if (ball.z - ball.size <= -FIELDWIDTH/2 || ball.z + ball.size >= FIELDWIDTH/2) {
 		// back or front wall
 		ball.vz *= -1;
 	}
-	if (ball.y <= -FIELDHEIGHT/2 || ball.y >= FIELDHEIGHT/2) {
+	if (ball.y - ball.size <= -FIELDHEIGHT/2 || ball.y + ball.size >= FIELDHEIGHT/2) {
 		// bottom or top wall
 		ball.vy *= -1;
 	}
